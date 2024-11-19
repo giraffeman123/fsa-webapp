@@ -31,7 +31,8 @@ phases:
         then 
           echo "--------------------------------Image tag already exists--------------------------------"          
         else 
-          echo "--------------------------------Building the .WAR file--------------------------------"  
+          echo "--------------------------------Building the .WAR file--------------------------------" 
+          ls -la 
           chmod +x mvnw    
           ./mvnw clean package                   
           echo "--------------------------------Building the Docker image--------------------------------"  
