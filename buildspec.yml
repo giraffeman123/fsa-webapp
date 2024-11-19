@@ -4,9 +4,8 @@ phases:
   install:
     run-as: root
     on-failure: ABORT
-    # runtime-versions:
-    #   runtime: version
-    #   runtime: version
+    runtime-versions:
+       java: corretto17      
     commands:
       - echo "--------------------------------Installing yq library--------------------------------"
       - sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
@@ -16,8 +15,7 @@ phases:
     commands:
       - echo "--------------------------------Logging in to Amazon ECR--------------------------------"
       - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
-  build:
-    run-as: root
+  build:    
     on-failure: ABORT  
     commands:
       - echo "--------------------------------Build started on `date`--------------------------------"    
@@ -32,10 +30,8 @@ phases:
         then 
           echo "--------------------------------Image tag already exists--------------------------------"          
         else 
-          echo "--------------------------------Building the .WAR file--------------------------------" 
-          ls -la 
-          sudo chmod +x mvnw    
-          ./mvnw clean package                   
+          echo "--------------------------------Building the .WAR file--------------------------------"                     
+          mvn clean package                   
           echo "--------------------------------Building the Docker image--------------------------------"  
           docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
           docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$ENVIRONMENT/$IMAGE_REPO_NAME:$IMAGE_TAG           
